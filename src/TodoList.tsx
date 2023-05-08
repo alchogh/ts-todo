@@ -1,51 +1,55 @@
 import { useState } from "react";
+import TodoItem from "./TodoItem";
+import CreateList from "./CreateList";
 interface TList {
   id: number;
   text: string;
   completed: boolean;
 }
-export default function TodoList() {
+
+const TodoList = () => {
+  const [inputText, setInputText] = useState("");
   const [todoList, setTodoList] = useState<TList[]>([
     { id: 1, text: "할일 1", completed: false },
     { id: 2, text: "할일 2", completed: false },
   ]);
+
+  const textTypingHandler = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setInputText(e.target.value);
+  };
+
+  const textInputHandler = (event: React.FormEvent<HTMLFormElement>): void => {
+    event.preventDefault();
+    const newTodo: TList = {
+      id: Date.now(),
+      text: inputText,
+      completed: false,
+    };
+    setTodoList([...todoList, newTodo]);
+    setInputText("");
+  };
+
+  const textDeleteHandler = (id: number) => {
+    setTodoList(todoList.filter((todoItem) => todoItem.id !== id));
+  };
   return (
     <div className="bg-orange-100 grid place-items-center justify-center">
-      {todoList.map((item, index) => (
-        <div key={item.id}>
-          <li className="flex justify-between w-screen">
-            <button className="text-white bg-black rounded-md shadow-lg p-4 hover:bg-gray-400">
-              완료
-            </button>
-            <p>할 일 1</p>
-            <div className="buttonContainer">
-              <button
-                type="button"
-                className="text-white bg-black rounded-md shadow-lg p-4 hover:bg-gray-400 "
-              >
-                수정
-              </button>
-              <button
-                type="button"
-                className="text-white bg-black rounded-md shadow-lg p-4 hover:bg-gray-400"
-              >
-                삭제
-              </button>
-            </div>
-          </li>
-        </div>
+      {todoList.map((item) => (
+        <TodoItem
+          key={item.id}
+          id={item.id}
+          text={item.text}
+          completed={item.completed}
+          onClick={textDeleteHandler}
+        />
       ))}
-
-      <div className="p-10">
-        <form>
-          <input
-            type="text"
-            placeholder="할 일을 입력해 주세요."
-            className="p-3 "
-          />
-          <button>등록하기</button>
-        </form>
-      </div>
+      <CreateList
+        onChange={textTypingHandler}
+        onSubmit={textInputHandler}
+        inputText={inputText}
+      />
     </div>
   );
-}
+};
+
+export default TodoList;
