@@ -1,7 +1,8 @@
 import { useState } from "react";
 import TodoItem from "./TodoItem";
 import CreateList from "./CreateList";
-interface TList {
+
+export interface TList {
   id: number;
   text: string;
   completed: boolean;
@@ -32,22 +33,31 @@ const TodoList = () => {
   const textDeleteHandler = (id: number) => {
     setTodoList(todoList.filter((todoItem) => todoItem.id !== id));
   };
+
+  const textUpdateHandler = (newTodo: TList): void => {
+    const updateTodo = todoList.map((item) =>
+      item.id === newTodo.id ? newTodo : item
+    );
+    setTodoList(updateTodo);
+  };
   return (
-    <div className="bg-orange-100 grid place-items-center justify-center">
+    <div className="bg-white flex-col j p-3 w-6/12  border-2  border-[#e5e7eb]-900 items-center">
+      <CreateList
+        onChange={textTypingHandler}
+        onSubmit={textInputHandler}
+        inputText={inputText}
+      />
+
       {todoList.map((item) => (
         <TodoItem
           key={item.id}
           id={item.id}
           text={item.text}
           completed={item.completed}
-          onClick={textDeleteHandler}
+          onClickDelete={textDeleteHandler}
+          onClickUpdate={textUpdateHandler}
         />
       ))}
-      <CreateList
-        onChange={textTypingHandler}
-        onSubmit={textInputHandler}
-        inputText={inputText}
-      />
     </div>
   );
 };
